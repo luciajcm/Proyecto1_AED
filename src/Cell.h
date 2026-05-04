@@ -1,11 +1,7 @@
 #pragma once
 #include <string>
 
-/**
- * Nodo de la matriz dispersa.
- * Cada celda no vacía es un nodo con punteros hacia la siguiente celda
- * en su misma fila y hacia la siguiente celda en su misma columna.
- */
+
 struct Cell {
     int row;           // Fila (0-indexed internamente)
     int col;           // Columna (0-indexed internamente)
