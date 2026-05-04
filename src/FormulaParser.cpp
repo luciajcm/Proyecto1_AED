@@ -4,9 +4,6 @@
 #include <cctype>
 #include <stdexcept>
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Punto de entrada público
-// ─────────────────────────────────────────────────────────────────────────────
 
 std::string FormulaParser::evaluate(const std::string& formula,
                                     const SparseMatrix& matrix) {
@@ -32,9 +29,6 @@ std::string FormulaParser::evaluate(const std::string& formula,
     return oss.str();
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Parser (descenso recursivo)
-// ─────────────────────────────────────────────────────────────────────────────
 
 char FormulaParser::peek() {
     skipSpaces();
@@ -88,7 +82,7 @@ double FormulaParser::parseFactor() {
     skipSpaces();
     char c = peek();
 
-    // Subexpresión entre paréntesis
+
     if (c == '(') {
         consume(); // '('
         double val = parseExpression();
@@ -99,7 +93,7 @@ double FormulaParser::parseFactor() {
         return val;
     }
 
-    // Signo negativo unario
+
     if (c == '-') {
         consume();
         return -parseFactor();
@@ -122,7 +116,7 @@ double FormulaParser::readNumber() {
 }
 
 double FormulaParser::readCellRef() {
-    // Leer letras
+
     size_t start = pos;
     while (pos < src.size() && isalpha(src[pos])) pos++;
     std::string colStr = src.substr(start, pos - start);
@@ -137,10 +131,10 @@ double FormulaParser::readCellRef() {
     auto [row, col] = CellAddress::parse(ref);
 
     std::string val = matrix.queryCell(row, col);
-    if (val.empty()) return 0.0; // Celda vacía cuenta como 0
+    if (val.empty()) return 0.0;
 
     double result;
-    // Intentar parsear recursivamente si es fórmula
+
     if (!val.empty() && val[0] == '=') {
         std::string sub = FormulaParser::evaluate(val, matrix);
         try { result = std::stod(sub); } catch (...) { result = 0.0; }

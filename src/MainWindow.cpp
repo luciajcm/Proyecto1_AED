@@ -19,9 +19,7 @@
 #include <sstream>
 #include <iomanip>
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Constructor
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     setWindowTitle("Hoja de Cálculo — Matrices Dispersas");
@@ -32,9 +30,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     refreshTable();
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Setup UI
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 void MainWindow::setupUi() {
     QWidget* central = new QWidget(this);
@@ -44,7 +40,7 @@ void MainWindow::setupUi() {
     mainLayout->setContentsMargins(4, 4, 4, 4);
     mainLayout->setSpacing(4);
 
-    // ── Barra de fórmulas ──
+
     QHBoxLayout* formulaLayout = new QHBoxLayout();
     cellLabel = new QLabel("A1", this);
     cellLabel->setFixedWidth(60);
@@ -60,7 +56,7 @@ void MainWindow::setupUi() {
     formulaLayout->addWidget(formulaBar);
     mainLayout->addLayout(formulaLayout);
 
-    // ── Tabla principal ──
+
     table = new QTableWidget(INIT_ROWS, INIT_COLS, this);
     table->setFont(QFont("Monospace", 10));
     table->horizontalHeader()->setDefaultSectionSize(80);
@@ -81,12 +77,12 @@ void MainWindow::setupUi() {
 
     mainLayout->addWidget(table);
 
-    // ── Barra de estado ──
+
     statusBar = new QStatusBar(this);
     setStatusBar(statusBar);
     status("Listo. Haz clic en una celda para editar.");
 
-    // ── Señales ──
+
     connect(table, &QTableWidget::currentCellChanged,
             this, &MainWindow::onCellSelected);
     connect(formulaBar, &QLineEdit::returnPressed,
@@ -98,7 +94,7 @@ void MainWindow::setupUi() {
 void MainWindow::setupMenuBar() {
     QMenuBar* mb = menuBar();
 
-    // ── Edición ──
+
     QMenu* editMenu = mb->addMenu("&Edición");
     QAction* actDelRow = editMenu->addAction("Eliminar fila actual");
     connect(actDelRow, &QAction::triggered, this, &MainWindow::onDeleteRow);
@@ -107,7 +103,7 @@ void MainWindow::setupMenuBar() {
     QAction* actDelRng = editMenu->addAction("Eliminar rango...");
     connect(actDelRng, &QAction::triggered, this, &MainWindow::onDeleteRange);
 
-    // ── Fórmulas ──
+
     QMenu* formulasMenu = mb->addMenu("&Fórmulas");
     QAction* actSumRow = formulasMenu->addAction("SUMA de fila...");
     QAction* actSumCol = formulasMenu->addAction("SUMA de columna...");
@@ -129,7 +125,7 @@ void MainWindow::setupMenuBar() {
     connect(actMaxRng, &QAction::triggered, this, &MainWindow::onMaxRange);
     connect(actMinRng, &QAction::triggered, this, &MainWindow::onMinRange);
 
-    // ── Ayuda ──
+
     QMenu* helpMenu = mb->addMenu("A&yuda");
     QAction* actAbout = helpMenu->addAction("Acerca de...");
     connect(actAbout, &QAction::triggered, this, &MainWindow::onAbout);
@@ -154,9 +150,7 @@ void MainWindow::setupToolBar() {
     a->setToolTip("Eliminar rango de celdas"); connect(a, &QAction::triggered, this, &MainWindow::onDeleteRange);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Helpers
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 QString MainWindow::colHeader(int col) {
     return QString::fromStdString(CellAddress::colToStr(col));
@@ -231,9 +225,7 @@ void MainWindow::refreshTable() {
     blockTableSignals = false;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Diálogos de entrada
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 std::pair<int,int> MainWindow::askCellRef(const QString& title, bool* ok) {
     QString ref = QInputDialog::getText(this, title, "Referencia de celda (ej: B3):",
@@ -294,9 +286,7 @@ std::tuple<int,int,int,int> MainWindow::askRange(const QString& title, bool* ok)
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Slots — Edición de celdas
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 void MainWindow::onCellSelected(int row, int col) {
     if (row < 0 || col < 0) return;
@@ -345,9 +335,7 @@ void MainWindow::onTableCellChanged(int row, int col) {
            QString::fromStdString(CellAddress::toString(row, col))));
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Slots — Operaciones de fila/columna
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 void MainWindow::onDeleteRow() {
     bool ok; int row = askRow("Eliminar fila", &ok);
@@ -370,9 +358,7 @@ void MainWindow::onDeleteRange() {
     status("Rango eliminado.");
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Slots — Agregaciones
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 void MainWindow::onSumRow() {
     bool ok; int row = askRow("SUMA de fila", &ok); if (!ok) return;

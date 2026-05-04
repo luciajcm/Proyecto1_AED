@@ -3,11 +3,11 @@
 
 
 struct Cell {
-    int row;           // Fila (0-indexed internamente)
-    int col;           // Columna (0-indexed internamente)
-    std::string value; // Valor almacenado (numérico o texto)
-    Cell* nextInRow;   // Siguiente nodo en la misma fila
-    Cell* nextInCol;   // Siguiente nodo en la misma columna
+    int row;
+    int col;
+    std::string value;
+    Cell* nextInRow;
+    Cell* nextInCol;
 
     Cell(int r, int c, const std::string& v)
         : row(r), col(c), value(v),

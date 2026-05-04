@@ -3,14 +3,11 @@
 #include <cmath>
 #include <algorithm>
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Constructor / Destructor
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 SparseMatrix::SparseMatrix() {}
 
 SparseMatrix::~SparseMatrix() {
-    // Liberar todos los nodos recorriendo fila por fila
     for (auto& [row, head] : rowHeaders) {
         Cell* cur = head;
         while (cur) {
@@ -21,9 +18,7 @@ SparseMatrix::~SparseMatrix() {
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Helpers privados
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 Cell* SparseMatrix::findCell(int row, int col) const {
     auto it = rowHeaders.find(row);
@@ -60,7 +55,6 @@ void SparseMatrix::unlinkFromRow(Cell* node) {
     if (prev) {
         prev->nextInRow = node->nextInRow;
     } else {
-        // Era el primero de la fila
         if (node->nextInRow)
             rowHeaders[row] = node->nextInRow;
         else
@@ -86,18 +80,16 @@ bool SparseMatrix::toDouble(const std::string& value, double& out) {
     try {
         size_t pos;
         out = std::stod(value, &pos);
-        return pos == value.size(); // Toda la cadena es numérica
+        return pos == value.size();
     } catch (...) {
         return false;
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Operaciones básicas
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 void SparseMatrix::insertCell(int row, int col, const std::string& value) {
-    // Si ya existe, solo actualizar
+
     Cell* existing = findCell(row, col);
     if (existing) {
         existing->value = value;
@@ -106,21 +98,21 @@ void SparseMatrix::insertCell(int row, int col, const std::string& value) {
 
     Cell* node = new Cell(row, col, value);
 
-    // ── Insertar en la lista de la fila (ordenado por col) ──
+
     auto rowIt = rowHeaders.find(row);
     if (rowIt == rowHeaders.end() || rowIt->second == nullptr || rowIt->second->col > col) {
-        // Insertar al inicio de la fila
+
         node->nextInRow = (rowIt != rowHeaders.end()) ? rowIt->second : nullptr;
         rowHeaders[row] = node;
     } else {
-        // Recorrer para encontrar la posición de inserción ordenada por col
+
         Cell* p = rowHeaders[row];
         while (p->nextInRow && p->nextInRow->col < col) p = p->nextInRow;
         node->nextInRow = p->nextInRow;
         p->nextInRow = node;
     }
 
-    // ── Insertar en la lista de la columna (ordenado por row) ──
+
     auto colIt = colHeaders.find(col);
     if (colIt == colHeaders.end() || colIt->second == nullptr || colIt->second->row > row) {
         node->nextInCol = (colIt != colHeaders.end()) ? colIt->second : nullptr;
@@ -155,9 +147,6 @@ bool SparseMatrix::deleteCell(int row, int col) {
     return true;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Operaciones sobre filas y columnas
-// ─────────────────────────────────────────────────────────────────────────────
 
 void SparseMatrix::deleteRow(int row) {
     auto it = rowHeaders.find(row);
@@ -191,7 +180,7 @@ void SparseMatrix::deleteRange(int r1, int c1, int r2, int c2) {
     if (r1 > r2) std::swap(r1, r2);
     if (c1 > c2) std::swap(c1, c2);
 
-    // Recolectar nodos a eliminar para no invalidar iteradores
+
     std::vector<std::pair<int,int>> toDelete;
     for (auto& [row, head] : rowHeaders) {
         if (row < r1 || row > r2) continue;
@@ -206,9 +195,6 @@ void SparseMatrix::deleteRange(int r1, int c1, int r2, int c2) {
         deleteCell(r, c);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Agregaciones
-// ─────────────────────────────────────────────────────────────────────────────
 
 double SparseMatrix::sumRow(int row) const {
     auto it = rowHeaders.find(row);
@@ -312,9 +298,6 @@ double SparseMatrix::minRange(int r1, int c1, int r2, int c2) const {
     return minVal;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  Utilidades
-// ─────────────────────────────────────────────────────────────────────────────
 
 std::vector<Cell*> SparseMatrix::getAllCells() const {
     std::vector<Cell*> cells;
